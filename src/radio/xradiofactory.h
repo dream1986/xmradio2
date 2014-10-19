@@ -30,7 +30,8 @@ public:
 	static XRadioFactory* instance();
 
 	const QList<XRadio *>& availableRadio();
-	XRadio* getRadioByIndex(int index);
+	XRadio* getRadio(int index);
+	XRadio* defaultRadio();
 
 private:
 	XRadioFactoryPrivate *d_ptr;

@@ -26,6 +26,7 @@ public:
 public:
 	QString name();
 	QList<XRadioStyle *> radioStyles();
+	XRadioStyle* defaultRadioStyle();
 	bool nextMusic(XMusicInfo &music);
 	void rateMusic(int rate);
 	bool changeStyle(XRadioStyle *style);

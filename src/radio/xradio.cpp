@@ -34,14 +34,15 @@ XRadio::XRadio(XRadioService *service, QObject *parent)
 	, d_ptr(new XRadioPrivate(service))
 {
 	Q_D(XRadio);
-	connect(d->service, SIGNAL(musicAvailable(XMusicInfo)), SIGNAL(musicAvailable(XMusicInfo)));
-	connect(d->service, SIGNAL(stateChanged(int,int)), SIGNAL(stateChanged(int,int)));
+	connect(d->service, SIGNAL(musicAvailable()), SIGNAL(musicAvailable()));
+	connect(d->service, SIGNAL(styleChanged(XRadioStyle*)), SIGNAL(styleChanged(XRadioStyle*)));
+	connect(d->service, SIGNAL(stateChanged(int,int)), SLOT(stateChanged(int,int)));
+	connect(d->service, SIGNAL(needLogin(QMap<QString,QPair<QString,int> >)), SIGNAL(needLogin(QMap<QString,QPair<QString,int> >)));
 }
 
 XRadio::~XRadio()
 {
 	qDebug() << "~XRadio";
-	delete d_ptr;
 }
 
 QString XRadio::name()
@@ -49,14 +50,24 @@ QString XRadio::name()
 	return d_func()->service->name();
 }
 
+QList<XRadioStyle *> XRadio::radioStyles()
+{
+	return d_func()->service->radioStyles();
+}
+
+XRadioStyle* XRadio::defaultStyle()
+{
+	return d_func()->service->defaultRadioStyle();
+}
+
 bool XRadio::nextMusic(XMusicInfo &music)
 {
 	return d_func()->service->nextMusic(music);
 }
 
-QList<XRadioStyle *> XRadio::radioStyles()
+void XRadio::rateMusic(int rate)
 {
-	return d_func()->service->radioStyles();
+	d_func()->service->rateMusic(rate);
 }
 
 bool XRadio::changeStyle(XRadioStyle *style)
@@ -67,6 +78,42 @@ bool XRadio::changeStyle(XRadioStyle *style)
 void XRadio::login(const QMap<QString, QVariant> &auths)
 {
 	d_func()->service->login(auths);
+}
+
+bool XRadio::isLoggedIn()
+{
+	return d_func()->service->isLoggedIn();
+}
+
+void XRadio::logout()
+{
+	d_func()->service->logout();
+}
+
+void XRadio::stateChanged(int state, int code)
+{
+	switch (state)
+	{
+	case XRadioService::LoggedIn:
+		emit loginStateChanged(LoggedIn);
+		break;
+
+	case XRadioService::LoggedOut:
+		emit loginStateChanged(LoggedOut);
+		break;
+
+	case XRadioService::LoginFailed:
+		emit loginStateChanged(LoginFailed);
+		break;
+
+	case XRadioService::NetworkError:
+		emit networkError(code);
+		break;
+
+	case XRadioService::NoData:
+		emit serviceError();
+		break;
+	}
 }
 
 XMR_END_NS

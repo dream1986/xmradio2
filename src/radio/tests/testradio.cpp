@@ -47,16 +47,20 @@ int main(int argc, char **argv)
 			}
 		}
 
-		radio->changeStyle(styles[1]);
+		XRadioStyle *style = radio->defaultStyle();
+		cout << "Default style: " << style->name().toStdString() << endl;
+		radio->changeStyle(style);
 		XMusicInfo music;
 		if (!radio->nextMusic(music))
 		{
-			cout << "No music available" << endl;
+			cout << "Wait for music available" << endl;
+			QEventLoop loop;
+			QObject::connect(radio, SIGNAL(musicAvailable()), &loop, SLOT(quit()));
+			loop.exec();
+			radio->nextMusic(music);
 		}
-		else
-		{
-			cout << "MUSIC TITLE: " << music.title.toStdString() << endl;
-		}
+
+		cout << "MUSIC TITLE: " << music.title.toStdString() << endl;
 	}
 
 	return 0;

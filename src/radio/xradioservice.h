@@ -33,6 +33,7 @@ public:
 
 	virtual QString name() = 0;
 	virtual QList<XRadioStyle *> radioStyles() = 0;
+	virtual XRadioStyle* defaultRadioStyle() = 0;
 	virtual bool nextMusic(XMusicInfo &music) = 0;
 	virtual void rateMusic(int rate) = 0;
 	virtual bool changeStyle(XRadioStyle *style) = 0;
@@ -57,7 +58,7 @@ public:
 	};
 
 Q_SIGNALS:
-	void musicAvailable(const XMusicInfo &music);
+	void musicAvailable();
 	void styleChanged(XRadioStyle *style);
 	void stateChanged(int state, int code);
 	void needLogin(const QMap<QString, QPair<QString, int> > &authKeys);

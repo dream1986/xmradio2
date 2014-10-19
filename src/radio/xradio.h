@@ -35,18 +35,36 @@ public:
 
 public:
 	QString name();
+	QList<XRadioStyle *> radioStyles();
+	XRadioStyle* defaultStyle();
 	bool nextMusic(XMusicInfo &music);
 	void rateMusic(int rate);
-	QList<XRadioStyle *> radioStyles();
 	bool changeStyle(XRadioStyle *style);
 	void login(const QMap<QString, QVariant> &auths);
+	bool isLoggedIn();
+	void logout();
+
+public:
+	enum LoginStatus
+	{
+		LoggedIn,
+		LoggedOut,
+		LoginFailed
+	};
 
 Q_SIGNALS:
-	void musicAvailable(const XMusicInfo &music);
+	void musicAvailable();
+	void styleChanged(XRadioStyle *style);
+	void needLogin(const QMap<QString, QPair<QString, int> > &authKeys);
+	void networkError(int code);
+	void serviceError();
+	void loginStateChanged(int status);
+
+private Q_SLOTS:
 	void stateChanged(int state, int code);
 
 private:
-	XRadioPrivate *d_ptr;
+	QScopedPointer<XRadioPrivate> d_ptr;
 };
 
 XMR_END_NS

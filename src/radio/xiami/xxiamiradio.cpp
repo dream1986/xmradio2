@@ -146,17 +146,22 @@ private Q_SLOTS:
 private:
 	QList<XRadioStyle *> radioStyles;
 	QList<XMusicInfo> playlist;
-	bool isLoggedIn;
+
 	XRadioStyleXiaMi *currentStyle;
+	XRadioStyleXiaMi *defaultStyle;
+
 	QNetworkAccessManager *network;
 	NM_Operation curOperation;
+
 	QString userId;
+	bool isLoggedIn;
 };
 
 XXiaMiRadioPrivate::XXiaMiRadioPrivate()
 	: curOperation(NM_None)
 	, isLoggedIn(false)
 	, currentStyle(NULL)
+	, defaultStyle(NULL)
 	, network(new QNetworkAccessManager(this))
 {
 	connect(network, SIGNAL(finished(QNetworkReply*)), SLOT(replyFinished(QNetworkReply*)));
@@ -190,7 +195,16 @@ void XXiaMiRadioPrivate::initStyles()
 		XRadioStyleXiaMi *style = new XRadioStyleXiaMi(radios[i]);
 		if (initSubStyles(style, radios[i + 1]))
 			radioStyles.push_back(style);
+		else
+			delete style;
 	}
+
+	if (defaultStyle == NULL)
+	{
+		defaultStyle = dynamic_cast<XRadioStyleXiaMi *>(radioStyles[0]);
+	}
+
+	currentStyle = defaultStyle;
 }
 
 bool XXiaMiRadioPrivate::initSubStyles(XRadioStyleXiaMi *style, const QString &url)
@@ -237,6 +251,12 @@ bool XXiaMiRadioPrivate::initSubStyles(XRadioStyleXiaMi *style, const QString &u
 
 			XRadioStyleXiaMi *substyle = new XRadioStyleXiaMi(name, logo, url);
 			style->m_substyles.push_back(substyle);
+
+			// 新歌电台
+			if (defaultStyle == NULL && url == "http://www.xiami.com/kuang/xml/type/6/id/0")
+			{
+				defaultStyle = substyle;
+			}
 		}
 	}
 
@@ -273,6 +293,16 @@ bool XXiaMiRadioPrivate::changeStyle(const QList<XRadioStyle *> &styles, XRadioS
 {
 	if (styles.isEmpty() || style == NULL)
 		return false;
+
+	if (style == currentStyle)
+		return true;
+
+	if (style == defaultStyle)
+	{
+		currentStyle = defaultStyle;
+		emit q_func()->styleChanged(style);
+		return true;
+	}
 
 	XRadioStyleXiaMi *ls = dynamic_cast<XRadioStyleXiaMi *>(style);
 	if (ls == 0)
@@ -347,10 +377,8 @@ void XXiaMiRadioPrivate::parsePlaylist(QNetworkReply *reply)
 {
 	Q_Q(XXiaMiRadio);
 
-	QByteArray data = reply->readAll();
-	qDebug() << data;
 	QDomDocument doc;
-	if (!doc.setContent(data))
+	if (!doc.setContent(reply->readAll()))
 	{
 		emit q->stateChanged(XRadioService::NoData, 0);
 		return ;
@@ -401,7 +429,7 @@ void XXiaMiRadioPrivate::parsePlaylist(QNetworkReply *reply)
 	if (!newPlaylist.isEmpty())
 	{
 		playlist << newPlaylist;
-		emit q->musicAvailable(playlist.takeLast());
+		emit q->musicAvailable();
 	}
 }
 
@@ -409,7 +437,21 @@ void XXiaMiRadioPrivate::parseLogout(QNetworkReply *reply)
 {
 	isLoggedIn = false;
 
+	playlist.clear();
+	network->clearAccessCache();
+	network->setCookieJar(new QNetworkCookieJar);
+
 	emit q_func()->stateChanged(XRadioService::LoggedOut, 0);
+
+	if (currentStyle && currentStyle != defaultStyle &&
+		(currentStyle->url == QLatin1String(_MY_RADIO_URL)
+		 || currentStyle->url == QLatin1String(_XIAMI_GUESS_URL)
+		 ) && currentStyle->subStyles().isEmpty()
+		)
+	{
+		currentStyle = defaultStyle;
+		emit q_func()->styleChanged(currentStyle);
+	}
 }
 
 void XXiaMiRadioPrivate::parseLogin(QNetworkReply *reply)
@@ -500,6 +542,11 @@ void XXiaMiRadio::rateMusic(int rate)
 QList<XRadioStyle *> XXiaMiRadio::radioStyles()
 {
 	return d_func()->radioStyles;
+}
+
+XRadioStyle* XXiaMiRadio::defaultRadioStyle()
+{
+	return d_func()->defaultStyle;
 }
 
 bool XXiaMiRadio::changeStyle(XRadioStyle *style)

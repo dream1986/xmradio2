@@ -28,7 +28,7 @@ public:
 
 	void loadRadio();
 	const QList<XRadio*>& availableRadio() const;
-	XRadio* getRadioByIndex(int index);
+	XRadio* getRadio(int index);
 
 	typedef QMap<XRadioService*, XRadioServiceFactoryInterface*> SERVICEMAP;
 	SERVICEMAP m_services;
@@ -101,7 +101,7 @@ inline const QList<XRadio *> &XRadioFactoryPrivate::availableRadio() const
 	return m_radioList;
 }
 
-inline XRadio* XRadioFactoryPrivate::getRadioByIndex(int index)
+inline XRadio* XRadioFactoryPrivate::getRadio(int index)
 {
 	if (index < 0 || index >= m_radioList.count())
 		return NULL;
@@ -134,10 +134,15 @@ const QList<XRadio *>& XRadioFactory::availableRadio()
 	return d->availableRadio();
 }
 
-XRadio* XRadioFactory::getRadioByIndex(int index)
+XRadio* XRadioFactory::getRadio(int index)
 {
 	Q_D(XRadioFactory);
-	return d->getRadioByIndex(index);
+	return d->getRadio(index);
+}
+
+XRadio* XRadioFactory::defaultRadio()
+{
+	return getRadio(0);
 }
 
 XMR_END_NS
