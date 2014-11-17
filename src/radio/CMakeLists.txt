@@ -40,6 +40,4 @@ foreach(plugin ${radio_plugins})
 	output_radio(${plugin})
 endforeach()
 
-if (XMR_BUILD_TESTS)
-	add_subdirectory(tests)
-endif()
+xmr_add_tests()

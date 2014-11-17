@@ -2,22 +2,27 @@ cmake_minimum_required(VERSION 2.8.11 FATAL_ERROR)
 
 project(xmradio)
 
-option(XMR_BUILD_TESTS "Build the tests" OFF)
+option(XMR_BUILD_TESTS "Build the tests" ON)
 
 if (XMR_BUILD_TESTS)
 	enable_testing()
 endif()
 
-set(version 2.0)
+set(version 1.0)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
 
-#find_package(Qt5Widgets REQUIRED)
+find_package(Qt5Widgets REQUIRED)
 find_package(Qt5Core REQUIRED)
 find_package(Qt5Network REQUIRED)
 find_package(Qt5Xml REQUIRED)
 
+if (XMR_BUILD_TESTS)
+	find_package(Qt5Test REQUIRED)
+endif()
+
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+include(cmake/macro.cmake)
 
 # uninstall target
 configure_file(
