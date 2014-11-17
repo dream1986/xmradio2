@@ -8,7 +8,7 @@
 
 #include <QtTest/QtTest>
 
-#include "../../xunzip.h"
+#include "core/xunzip.h"
 
 XMR_USE_NS
 
