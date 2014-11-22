@@ -1,7 +1,7 @@
 PKG_CHECK_MODULES(ZLIB REQUIRED "zlib")
 
 set(core_SOURCES
-	core_export.h
+	xglobal.h
 	xunzip.h
 	xunzip.cpp
 )

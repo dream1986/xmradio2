@@ -10,8 +10,7 @@
 #define __X_RADIO_FACTORY_H__
 
 #include <QObject>
-#include <xglobal.h>
-#include "radio_export.h"
+#include <core/xglobal.h>
 
 XMR_BEGIN_NS
 

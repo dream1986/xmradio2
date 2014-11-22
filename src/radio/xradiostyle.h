@@ -11,7 +11,7 @@
 
 #include <QString>
 #include <QList>
-#include <xglobal.h>
+#include <core/xglobal.h>
 
 XMR_BEGIN_NS
 

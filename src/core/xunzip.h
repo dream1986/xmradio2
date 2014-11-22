@@ -13,7 +13,6 @@
 #include <QScopedPointer>
 
 #include "xglobal.h"
-#include "core_export.h"
 
 XMR_BEGIN_NS
 

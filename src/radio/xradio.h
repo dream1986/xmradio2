@@ -11,11 +11,9 @@
 
 #include <QObject>
 #include <QMap>
-#include <xglobal.h>
+#include <core/xglobal.h>
 #include <radio/xmusicinfo.h>
 #include <radio/xradiostyle.h>
-
-#include "radio_export.h"
 
 XMR_BEGIN_NS
 

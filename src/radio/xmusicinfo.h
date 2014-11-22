@@ -10,7 +10,7 @@
 #define __X_MUSIC_INFO_H__
 
 #include <QString>
-#include <xglobal.h>
+#include <core/xglobal.h>
 
 XMR_BEGIN_NS
 

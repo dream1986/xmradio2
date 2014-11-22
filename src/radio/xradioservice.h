@@ -14,7 +14,7 @@
 #include <QMap>
 #include <QVariant>
 
-#include <xglobal.h>
+#include <core/xglobal.h>
 #include <radio/xmusicinfo.h>
 #include <radio/xradiostyle.h>
 

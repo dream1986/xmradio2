@@ -10,7 +10,7 @@
 #define __X_RADIO_PLUGIN_H__
 
 #include <QObject>
-#include <xglobal.h>
+#include <core/xglobal.h>
 
 XMR_BEGIN_NS
 
